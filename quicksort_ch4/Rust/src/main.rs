@@ -1,3 +1,4 @@
+use rand::Rng;
 // This file contains exercises and the Quicksort algorithm
 
 use std::{thread, time};
@@ -102,7 +103,7 @@ fn recursive_binary_search(left_index: usize, right_index: usize, number: i32, a
 
 }
 
-fn main() {
+fn main2() {
     println!("====================================================");
     let mut array: Vec<i32> = vec![9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 10];
     println!("\t\t Recursive sum");
@@ -157,4 +158,81 @@ fn main() {
     println!("====================================================");
 
 
+}
+
+fn quicksort(unsorted_list: Vec<i32>) -> Vec<i32> {
+
+
+    println!("");
+    println!("========================================================================================================");
+    // Base case
+    if unsorted_list.len() == 2 {
+        if unsorted_list[0] > unsorted_list[1] {
+            return vec![unsorted_list[1], unsorted_list[0]];
+        } else {
+            return unsorted_list;
+        }
+    } else if unsorted_list.len() < 2 {
+        println!("Empty or one element: {}", unsorted_list.len());
+        return unsorted_list;
+    } else { // Recursive case
+        let lenght_ul: i32 = unsorted_list.len() as i32;
+        println!("Length of unsorted_list is: {} elements", lenght_ul);
+        // for n in 1..6 {
+        //     println!("A random number between 0 and {} is {}", lenght_ul - 1, rand::thread_rng().gen_range(0..lenght_ul - 1));
+        // }
+
+        // Let's choose a random pivot
+        let random_pivot_index: usize = rand::thread_rng().gen_range(0..lenght_ul - 1) as usize;
+        let pivot: i32 = unsorted_list[random_pivot_index];
+        println!("Random index: {} --- Pivot: {}", random_pivot_index, pivot);
+        
+        let mut list_less_than_pivot: Vec<i32> = Vec::new();
+        let mut list_greater_than_pivot: Vec<i32> = Vec::new();
+
+        for cursor in 0..lenght_ul {
+            if cursor as usize != random_pivot_index { // It must be different to current pivot
+                if unsorted_list[cursor as usize] <= pivot {
+                    list_less_than_pivot.push(unsorted_list[cursor as usize]);
+                } else {
+                    list_greater_than_pivot.push(unsorted_list[cursor as usize]);
+                }
+            }
+        }
+
+        println!("QS([{:?}]) + [{:?}] + QS([{:?}])", list_less_than_pivot, vec![pivot], list_greater_than_pivot);
+
+        let sorted_list_less: Vec<i32> = quicksort(list_less_than_pivot);
+        let sorted_list_greater: Vec<i32> = quicksort(list_greater_than_pivot);
+
+        // Creation of sorted cursor
+        let mut sorted_list: Vec<i32> = Vec::new();
+
+        // Left size
+        for cursor in 0..sorted_list_less.len() {
+            sorted_list.push(sorted_list_less[cursor as usize]);
+        }
+        // Pivot
+        sorted_list.push(pivot);
+        // Right side
+        for cursor in 0..sorted_list_greater.len() {
+            sorted_list.push(sorted_list_greater[cursor as usize]);
+        }
+        println!("New sorted list: {:?}", sorted_list);
+        
+        // Return sorted list
+        sorted_list
+    }
+}
+
+fn main() {
+    println!("========================================================================================================");
+    println!("Quicksort algorithm - D&C");
+    println!("========================================================================================================");
+
+    // Let's put in practice ownership knowledge
+    let unsorted_list: Vec<i32> = vec![4,2,5,8,20,4, -1, 0, -100, 10000];
+    println!("Unsorted list: {:?}", unsorted_list);
+    let sorted_list = quicksort(unsorted_list); // the ownership of unsorted_list it's passed to quicksort function. It not longer exists.
+    println!("Sorted list: {:?}", sorted_list); // The ouwnership of returned list is passed to main function
 }
